@@ -1,0 +1,26 @@
+# Dependências
+node_modules/
+vendor/
+
+# Ambiente
+.env
+.env.local
+backend/.env
+
+# Build
+frontend/dist/
+frontend/build/
+
+# Storage (uploads reais)
+backend/storage/uploads/covers/*
+backend/storage/uploads/books/*
+!backend/storage/uploads/covers/.gitkeep
+!backend/storage/uploads/books/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
