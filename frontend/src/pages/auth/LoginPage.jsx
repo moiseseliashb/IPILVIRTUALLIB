@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../contexts/AuthContext";
 
 const styles = `
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500&display=swap');
@@ -6,15 +8,16 @@ const styles = `
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --ink:       #1a1714;
-    --paper:     #f5f0e8;
-    --cream:     #ede8dc;
-    --gold:      #b8860b;
-    --gold-lt:   #d4a020;
-    --rust:      #8b3a1e;
-    --muted:     #6b6255;
-    --line:      rgba(26,23,20,0.12);
-    --shadow:    0 2px 24px rgba(26,23,20,0.10);
+    --ink:      #3b1f0e;
+    --paper:    #fff7ef;
+    --cream:    #fff4e6;
+    --sun:      #ff9b4b;
+    --sun-lt:   #ffd8b3;
+    --peach:    #ffb878;
+    --caramel:  #f27b30;
+    --muted:    #7d5b47;
+    --line:     rgba(61,38,17,0.12);
+    --shadow:   0 24px 48px rgba(61,38,17,0.12);
   }
 
   .login-root {
@@ -28,7 +31,7 @@ const styles = `
 
   /* ── LADO ESQUERDO ── */
   .panel-left {
-    background: var(--ink);
+    background: linear-gradient(145deg, #fff4e6 0%, #ffba78 48%, #ff9b4b 100%);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -42,8 +45,9 @@ const styles = `
     position: absolute;
     inset: 0;
     background-image:
-      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.035) 39px, rgba(255,255,255,0.035) 40px),
-      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.025) 39px, rgba(255,255,255,0.025) 40px);
+      radial-gradient(circle at 30% 20%, rgba(255,255,255,0.35) 0%, transparent 30%),
+      radial-gradient(circle at 85% 35%, rgba(255,255,255,0.22) 0%, transparent 28%),
+      repeating-linear-gradient(135deg, transparent, transparent 36px, rgba(255,255,255,0.07) 36px, rgba(255,255,255,0.07) 38px);
     pointer-events: none;
   }
 
@@ -57,11 +61,12 @@ const styles = `
   .brand-icon {
     width: 44px;
     height: 44px;
-    background: var(--gold);
-    border-radius: 10px;
+    background: #ff914d;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 18px 40px rgba(255,149,77,0.18);
   }
 
   .brand-icon svg { width: 24px; height: 24px; fill: var(--ink); }
@@ -86,6 +91,22 @@ const styles = `
     position: relative;
   }
 
+  .illustration-card {
+    margin-top: 30px;
+    width: 100%;
+    max-width: 360px;
+    border-radius: 30px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.85);
+    box-shadow: 0 26px 60px rgba(61,38,17,0.12);
+  }
+
+  .illustration-card svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   .left-eyebrow {
     font-size: 11px;
     letter-spacing: 0.14em;
@@ -98,20 +119,20 @@ const styles = `
     font-family: 'Playfair Display', serif;
     font-size: 48px;
     font-weight: 700;
-    color: #f5f0e8;
+    color: #3b1f0e;
     line-height: 1.15;
     margin-bottom: 24px;
   }
 
   .left-title em {
     font-style: italic;
-    color: var(--gold-lt);
+    color: var(--sun);
   }
 
   .left-desc {
     font-size: 15px;
-    color: rgba(245,240,232,0.55);
-    line-height: 1.7;
+    color: rgba(61,38,17,0.72);
+    line-height: 1.75;
     max-width: 340px;
   }
 
@@ -148,7 +169,11 @@ const styles = `
 
   .form-card {
     width: 100%;
-    max-width: 400px;
+    max-width: 420px;
+    background: #fff;
+    border-radius: 26px;
+    padding: 42px 40px;
+    box-shadow: var(--shadow);
   }
 
   .form-eyebrow {
@@ -322,24 +347,25 @@ const styles = `
   .btn-login {
     width: 100%;
     padding: 15px;
-    background: var(--ink);
-    color: var(--paper);
+    background: linear-gradient(90deg, #ff8b3c, #ffb86b);
+    color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 14px;
     font-family: 'DM Sans', sans-serif;
     font-size: 15px;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
     letter-spacing: 0.03em;
-    transition: background 0.2s, transform 0.1s;
+    transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
     margin-bottom: 24px;
+    box-shadow: 0 18px 30px rgba(242,123,48,0.16);
   }
 
-  .btn-login:hover { background: #2e2b27; }
+  .btn-login:hover { opacity: 0.96; }
   .btn-login:active { transform: scale(0.99); }
   .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
 
@@ -423,6 +449,8 @@ export default function LoginPage() {
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -432,12 +460,15 @@ export default function LoginPage() {
     }
     setError("");
     setLoading(true);
-    // Simulação de chamada à API
-    await new Promise(r => setTimeout(r, 1500));
-    setLoading(false);
-    // Exemplo de erro retornado pela API:
-    setError("Credenciais incorretas. Verifica o teu email e palavra-passe.");
-    // Em produção: redirecionar com react-router após sucesso
+    try {
+      await login(email, password);
+      navigate("/catalogo", { replace: true });
+    } catch (err) {
+      const message = err?.response?.data?.error || "Falha ao iniciar sessão. Verifica o email e a palavra-passe.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -469,6 +500,29 @@ export default function LoginPage() {
               Acede ao catálogo completo da biblioteca escolar,
               requisita livros, lê online e acompanha o teu progresso de leitura.
             </p>
+
+            <div className="illustration-card">
+              <svg viewBox="0 0 420 300" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="warmGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#fff1e0" />
+                    <stop offset="100%" stop-color="#ffd3a4" />
+                  </linearGradient>
+                </defs>
+                <rect x="0" y="0" width="420" height="300" rx="28" fill="url(#warmGradient)" />
+                <path d="M80 220c0-44 38-80 85-80s85 36 85 80" fill="#ff9b4b" opacity="0.16" />
+                <path d="M58 202c12-18 32-30 56-30 30 0 55 22 58 50H58c0-6 1-12 2-20z" fill="#fff" opacity="0.55" />
+                <rect x="128" y="96" width="168" height="126" rx="22" fill="#ffd8b3" />
+                <rect x="144" y="116" width="132" height="88" rx="16" fill="#fff" />
+                <path d="M172 158h96" stroke="#ff914d" stroke-width="12" stroke-linecap="round" />
+                <path d="M172 184h96" stroke="#ff914d" stroke-width="12" stroke-linecap="round" />
+                <circle cx="300" cy="136" r="36" fill="#ff914d" />
+                <circle cx="302" cy="132" r="20" fill="#ffdfc2" />
+                <path d="M290 154c12 18 24 22 34 16" stroke="#bf5f26" stroke-width="10" stroke-linecap="round" />
+                <path d="M92 182c18-30 55-42 82-27" stroke="#f27b30" stroke-width="18" stroke-linecap="round" opacity="0.8" />
+                <path d="M88 84c16-22 42-32 66-26" stroke="#ffb86b" stroke-width="16" stroke-linecap="round" opacity="0.8" />
+              </svg>
+            </div>
           </div>
 
           <div className="left-stats">

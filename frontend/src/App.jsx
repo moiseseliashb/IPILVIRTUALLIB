@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LoginPage from "./pages/auth/LoginPage";
+import CatalogPage from "./pages/catalog/CatalogPage";
 import { AuthProvider } from "./contexts/AuthContext";
 
 // TODO: importar páginas à medida que forem criadas
-// import CatalogPage    from "./pages/catalog/CatalogPage";
 // import BookDetail     from "./pages/catalog/BookDetail";
 // import ReaderPage     from "./pages/reader/ReaderPage";
 // import AdminDashboard from "./pages/admin/Dashboard";
@@ -22,7 +22,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          {/* <Route path="/catalogo" element={<PrivateRoute><CatalogPage /></PrivateRoute>} /> */}
+          <Route path="/catalogo" element={<PrivateRoute><CatalogPage /></PrivateRoute>} />
           {/* <Route path="/livro/:id" element={<PrivateRoute><BookDetail /></PrivateRoute>} /> */}
           {/* <Route path="/ler/:id" element={<PrivateRoute><ReaderPage /></PrivateRoute>} /> */}
           {/* <Route path="/admin" element={<PrivateRoute roles={["admin"]}><AdminDashboard /></PrivateRoute>} /> */}
