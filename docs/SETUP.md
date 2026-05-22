@@ -20,7 +20,7 @@ Colocar o projeto em `htdocs` e garantir que o Apache está ativo.
 
 A API ficará disponível em:
 ```text
-http://localhost/IPILVIRTUALLIB-main/backend/public/api/ping
+http://localhost/IPILVIRTUALLIB/backend/public/api/ping
 ```
 
 ### Com o servidor embutido do PHP
