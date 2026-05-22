@@ -461,8 +461,8 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await login(email, password);
-      navigate("/catalogo", { replace: true });
+      const user = await login(email, password);
+      navigate(user?.role === "admin" ? "/admin/dashboard" : "/catalogo", { replace: true });
     } catch (err) {
       const message = err?.response?.data?.error || "Falha ao iniciar sessão. Verifica o email e a palavra-passe.";
       setError(message);

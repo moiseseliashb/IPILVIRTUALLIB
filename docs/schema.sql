@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS users (
     ativo           TINYINT(1) NOT NULL DEFAULT 1,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login      TIMESTAMP NULL,
     INDEX idx_email  (email),
     INDEX idx_role   (role),
     INDEX idx_turma  (turma)
@@ -175,6 +176,31 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
         ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- ──────────────────────────────────────────
+--  9. PUBLICAÇÕES DO ADMIN
+-- ──────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS admin_publications (
+    id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    tipo        ENUM('livro','informacao') NOT NULL DEFAULT 'informacao',
+    titulo      VARCHAR(180) NOT NULL,
+    conteudo    TEXT NOT NULL,
+    book_id     INT UNSIGNED NULL,
+    created_by  INT UNSIGNED NOT NULL,
+    ativo       TINYINT(1) NOT NULL DEFAULT 1,
+    created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_pub_tipo  (tipo),
+    INDEX idx_pub_ativo (ativo),
+    INDEX idx_pub_book  (book_id),
+    INDEX idx_pub_user  (created_by),
+    CONSTRAINT fk_pub_book
+        FOREIGN KEY (book_id) REFERENCES books(id)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_pub_user
+        FOREIGN KEY (created_by) REFERENCES users(id)
+        ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- ============================================================
 --  DADOS INICIAIS (seed)
 -- ============================================================
@@ -194,7 +220,7 @@ INSERT INTO categories (nome, descricao) VALUES
 -- Admin padrão (password: Admin@123 — MUDAR EM PRODUÇÃO)
 INSERT INTO users (nome, email, password_hash, role) VALUES
 ('Administrador', 'admin@biblioteca.escola.ao',
- '$2y$12$placeholderHashMudarEmProducao000000000000000000000000u',
+ '$2y$12$VVYr043sBq9yA5BJH86XLefXlFRZY3V.SW93zLPeXijaeU6xljGe2',
  'admin');
 
 SET foreign_key_checks = 1;

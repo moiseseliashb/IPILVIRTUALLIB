@@ -15,18 +15,33 @@ mysql -u root -p ipilvirtuallib < docs/schema.sql
 ```
 
 ## 2. Backend (PHP)
+### Com XAMPP/Apache
+Colocar o projeto em `htdocs` e garantir que o Apache está ativo.
+
+A API ficará disponível em:
+```text
+http://localhost/IPILVIRTUALLIB-main/backend/public/api/ping
+```
+
+### Com o servidor embutido do PHP
 ```bash
 cd backend
 cp .env.example .env
 # Editar .env com as credenciais da BD e o JWT_SECRET
-php -S localhost:8000 -t public
+php -S localhost:8000 -t public public/index.php
 ```
 
 ## 3. Frontend (React)
 ```bash
 cd frontend
 npm install
+cp .env.example .env
 npm run dev
 ```
 
 Aceder em: **http://localhost:5173**
+
+Se usar o servidor embutido do PHP em vez do XAMPP, altere `frontend/.env` para:
+```env
+VITE_API_TARGET=http://localhost:8000
+```
