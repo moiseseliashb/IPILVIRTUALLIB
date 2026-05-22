@@ -16,11 +16,11 @@ function LineChart({ data }) {
   return (
     <div className="chart-box">
       <svg viewBox="0 0 600 250" role="img" aria-label="Crescimento de utilizadores">
-        <polyline points={points} fill="none" stroke="#D96F32" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <polyline points={points} fill="none" stroke="#E07820" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
         {data.map((item, index) => {
           const x = data.length <= 1 ? 300 : 32 + (index * 536) / (data.length - 1);
           const y = 220 - (Number(item.total) / max) * 170;
-          return <circle key={item.month} cx={x} cy={y} r="5" fill="#374151" />;
+          return <circle key={item.month} cx={x} cy={y} r="5" fill="#10B981" />;
         })}
       </svg>
       <div className="chart-labels">
