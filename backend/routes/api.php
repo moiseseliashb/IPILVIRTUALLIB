@@ -51,6 +51,9 @@ if (str_starts_with($uri, '/admin')) {
     if ($method === 'GET'    && $uri === '/admin/stats')  { $admin->stats(); }
     if ($method === 'GET'    && $uri === '/admin/users')  { $admin->listUsers(); }
     if ($method === 'DELETE' && preg_match('#^/admin/users/(\d+)$#', $uri, $m)) { $admin->deleteUser((int)$m[1], (int)$authUser['id']); }
+    if ($method === 'GET'    && $uri === '/admin/utilizadores/contagem') { $admin->countUsersByRole(); }
+    if ($method === 'GET'    && $uri === '/admin/utilizadores') { $admin->listUsersByRole(); }
+    if ($method === 'DELETE' && preg_match('#^/admin/utilizadores/(\d+)$#', $uri, $m)) { $admin->deleteUser((int)$m[1], (int)$authUser['id']); }
     if ($method === 'GET'    && $uri === '/admin/publications') { $admin->listPublications(); }
     if ($method === 'POST'   && $uri === '/admin/publications') { $admin->createPublication((int)$authUser['id']); }
 }

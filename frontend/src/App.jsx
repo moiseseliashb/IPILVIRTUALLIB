@@ -29,7 +29,8 @@ export default function App() {
           <Route path="/catalogo" element={<PrivateRoute><CatalogPage /></PrivateRoute>} />
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<PrivateRoute roles={["admin"]}><AdminDashboard /></PrivateRoute>} />
-          <Route path="/admin/users" element={<PrivateRoute roles={["admin"]}><AdminUsers /></PrivateRoute>} />
+          <Route path="/admin/users" element={<Navigate to="/admin/utilizadores" replace />} />
+          <Route path="/admin/utilizadores" element={<PrivateRoute roles={["admin"]}><AdminUsers /></PrivateRoute>} />
           <Route path="/admin/publicacoes" element={<PrivateRoute roles={["admin"]}><AdminPublications /></PrivateRoute>} />
           {/* <Route path="/livro/:id" element={<PrivateRoute><BookDetail /></PrivateRoute>} /> */}
           {/* <Route path="/ler/:id" element={<PrivateRoute><ReaderPage /></PrivateRoute>} /> */}

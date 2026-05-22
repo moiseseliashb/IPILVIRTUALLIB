@@ -79,6 +79,82 @@ class AdminController {
         ]);
     }
 
+    public function countUsersByRole(): never {
+        $counts = [
+            'admin' => 0,
+            'professor' => 0,
+            'aluno' => 0,
+            'todos' => 0,
+        ];
+
+        $stmt = $this->db->query('
+            SELECT role, COUNT(*) AS total
+            FROM users
+            GROUP BY role
+        ');
+
+        foreach ($stmt->fetchAll() as $row) {
+            $role = (string)$row['role'];
+            if (array_key_exists($role, $counts)) {
+                $counts[$role] = (int)$row['total'];
+            }
+            $counts['todos'] += (int)$row['total'];
+        }
+
+        respond(['data' => $counts]);
+    }
+
+    public function listUsersByRole(): never {
+        $role = $_GET['role'] ?? '';
+        $search = trim($_GET['search'] ?? '');
+        $page = max(1, (int)($_GET['page'] ?? 1));
+        $perPage = min(50, max(1, (int)($_GET['perPage'] ?? 10)));
+        $offset = ($page - 1) * $perPage;
+
+        $where = [];
+        $params = [];
+
+        if ($role !== '') {
+            if (!in_array($role, ['admin', 'professor', 'aluno'], true)) {
+                respond(['error' => 'Role inválido'], 422);
+            }
+
+            $where[] = 'role = ?';
+            $params[] = $role;
+        }
+
+        if ($search !== '') {
+            $where[] = '(nome LIKE ? OR email LIKE ?)';
+            $params[] = "%{$search}%";
+            $params[] = "%{$search}%";
+        }
+
+        $whereSql = $where ? 'WHERE ' . implode(' AND ', $where) : '';
+
+        $countStmt = $this->db->prepare("SELECT COUNT(*) FROM users {$whereSql}");
+        $countStmt->execute($params);
+        $total = (int)$countStmt->fetchColumn();
+
+        $stmt = $this->db->prepare("
+            SELECT id, nome, email, role, created_at
+            FROM users
+            {$whereSql}
+            ORDER BY created_at DESC, id DESC
+            LIMIT {$perPage} OFFSET {$offset}
+        ");
+        $stmt->execute($params);
+
+        respond([
+            'data' => $stmt->fetchAll(),
+            'pagination' => [
+                'page' => $page,
+                'perPage' => $perPage,
+                'total' => $total,
+                'totalPages' => max(1, (int)ceil($total / $perPage)),
+            ],
+        ]);
+    }
+
     public function deleteUser(int $id, int $currentUserId): never {
         if ($id === $currentUserId) {
             respond(['error' => 'Não podes excluir a tua própria conta de administrador'], 422);
@@ -90,8 +166,18 @@ class AdminController {
             respond(['error' => 'Utilizador não encontrado'], 404);
         }
 
-        $delete = $this->db->prepare('DELETE FROM users WHERE id = ?');
-        $delete->execute([$id]);
+        $this->db->beginTransaction();
+        try {
+            $this->deleteRelatedUserData($id);
+
+            $delete = $this->db->prepare('DELETE FROM users WHERE id = ?');
+            $delete->execute([$id]);
+
+            $this->db->commit();
+        } catch (Throwable $e) {
+            $this->db->rollBack();
+            respond(['error' => 'Não foi possível excluir o utilizador'], 500);
+        }
 
         respond(['message' => 'Utilizador excluído com sucesso']);
     }
@@ -223,6 +309,27 @@ class AdminController {
                     ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
+    }
+
+    private function deleteRelatedUserData(int $userId): void {
+        $relations = [
+            ['refresh_tokens', 'user_id'],
+            ['loans', 'user_id'],
+            ['digital_access', 'user_id'],
+            ['reading_logs', 'user_id'],
+            ['reviews', 'user_id'],
+            ['favorites', 'user_id'],
+            ['admin_publications', 'created_by'],
+        ];
+
+        foreach ($relations as [$table, $column]) {
+            if (!$this->hasTable($table) || !$this->hasColumn($table, $column)) {
+                continue;
+            }
+
+            $stmt = $this->db->prepare("DELETE FROM {$table} WHERE {$column} = ?");
+            $stmt->execute([$userId]);
+        }
     }
 
     private function hasTable(string $table): bool {

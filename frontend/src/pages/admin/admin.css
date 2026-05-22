@@ -222,7 +222,7 @@
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  background: #FFFFFF;
+  background: var(--admin-soft);
 }
 
 .admin-table th {
@@ -237,6 +237,7 @@
   padding: 12px;
   border-bottom: 1px solid var(--admin-border);
   font-size: 14px;
+  background: var(--admin-soft);
 }
 
 .admin-table tr:hover td {
@@ -267,6 +268,102 @@
   grid-template-columns: 1fr 180px;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+.users-toolbar.single {
+  grid-template-columns: 1fr;
+}
+
+.user-category-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.user-category-card {
+  min-height: 150px;
+  display: grid;
+  align-content: space-between;
+  gap: 24px;
+  text-align: left;
+  background: var(--admin-soft);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  padding: 22px;
+  color: var(--admin-text);
+  cursor: pointer;
+  transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.user-category-card:hover {
+  border-color: var(--admin-accent);
+  box-shadow: 0 14px 30px rgba(224,120,32,0.15);
+  transform: translateY(-2px);
+}
+
+.user-category-card span {
+  color: var(--admin-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.user-category-card strong {
+  color: var(--admin-text);
+  font-size: 36px;
+  line-height: 1;
+}
+
+.users-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.users-list-header div {
+  display: grid;
+  gap: 4px;
+  text-align: right;
+}
+
+.users-list-header span {
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.users-list-header strong {
+  color: var(--admin-text);
+  font-size: 18px;
+}
+
+.back-btn {
+  background: #FFFFFF;
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  color: var(--admin-text);
+  cursor: pointer;
+  padding: 10px 13px;
+  transition: border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+}
+
+.back-btn:hover {
+  border-color: var(--admin-accent);
+  color: var(--admin-accent);
+  box-shadow: 0 10px 22px rgba(224,120,32,0.15);
+}
+
+.role-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #FFFFFF;
+  border: 1px solid var(--admin-border);
+  color: var(--admin-muted);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 10px;
 }
 
 .users-toolbar input, .users-toolbar select, .publication-form input, .publication-form select, .publication-form textarea {
@@ -314,7 +411,7 @@
 }
 
 .danger-btn:hover {
-  opacity: 0.9;
+  background: #A93226;
 }
 
 .pagination-row {
@@ -501,7 +598,16 @@
     margin-left: 0;
   }
 
-  .metric-grid, .admin-grid, .users-toolbar, .publication-grid {
+  .metric-grid, .admin-grid, .users-toolbar, .publication-grid, .user-category-grid {
     grid-template-columns: 1fr;
+  }
+
+  .users-list-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .users-list-header div {
+    text-align: left;
   }
 }
